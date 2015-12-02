@@ -2,12 +2,12 @@
 <html>
 <head>
     <meta charset="UTF-8">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
-</script>
-<script src="underscore-min.js">
-</script>
-<script src="backbone-min.js">
-</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    </script>
+    <script src="underscore-min.js">
+    </script>
+    <script src="backbone-min.js">
+    </script>
 
     <script type="text/template" id="nameTemplate">
         <div class="names">
@@ -28,7 +28,7 @@
 </form>
 <script>
 
-    (function() {
+    (function () {
         window.App = {
             Models: {},
             Views: {},
@@ -36,17 +36,21 @@
         };
 
         //хэлпер шаблона
-        window.template = function(id) {
-            return _.template( $('#' + id).html() );
+        window.template = function (id) {
+
+            return _.template($('#' + id).html());
         };
 
         //Модель
         App.Models.Name = Backbone.Model.extend({
+
             defaults: {
                 title: 'Иван Петров'
             },
             validate: function (attrs) {
-                if ( ! $.trim(attrs.title) ) {
+                console.log(1)
+                if (!$.trim(attrs.title)) {
+
                     return 'Имя должно быть валидным!';
                 }
             }
@@ -54,25 +58,31 @@
 
         //Список
         App.Collections.Name = Backbone.Collection.extend({
+
             model: App.Models.Name
         });
 
         //Вид списка
         App.Views.Names = Backbone.View.extend({
+
             tagName: 'ul',
-            initialize: function() {
-                this.collection.on('add', this.addOne, this );
+            initialize: function () {
+
+                this.collection.on('add', this.addOne, this);
             },
-            render: function() {
-                this.collection.each(function(name) {
+            render: function () {
+
+                this.collection.each(function (name) {
                     var nameView = new App.Views.Name({model: name});
                     this.$el.append(nameView.render().el);
                 }, this);
                 return this;
             },
-            addOne: function(name) {
+            addOne: function (name) {
+
                 // создавать новый дочерний вид
-                var nameView = new App.Views.Name({ model: name });
+                var nameView = new App.Views.Name({model: name});
+
                 // добавлять его в корневой элемент
                 this.$el.append(nameView.render().el);
             }
@@ -81,31 +91,55 @@
 
         //Вид одного
         App.Views.Name = Backbone.View.extend({
+
             tagName: 'li',
-            template:  template('nameTemplate'),
-            initialize: function() {
+            template: template('nameTemplate'),
+            initialize: function () {
+
                 this.model.on('change', this.render, this);
                 this.model.on('destroy', this.remove, this);
             },
-            render: function() {
-                this.$el.html( this.template( this.model.toJSON() ) );
+            render: function () {
+
+                this.$el.html(this.template(this.model.toJSON()));
                 return this;
             },
-            events:{
+            events: {
+
                 'click .edit': 'editName',
                 'click .delete': 'destroy'
             },
             editName: function () {
+
                 var newNameTitle = prompt('Как переименуем ?', this.model.get('title'));
-                this.model.set('title', newNameTitle, {validate: true});
+                this.model.set({title: newNameTitle}, {validate: true});
             },
             destroy: function () {
+
                 this.model.destroy();
             },
             remove: function () {
+
                 this.$el.remove();
             }
         });
+
+        App.Views.AddName = Backbone.View.extend({
+            el: '#addName',
+            events: {
+                'submit': 'submit'
+            },
+            initialize: function () {
+
+            },
+            submit: function (e) {
+
+                e.preventDefault();
+                var newNameTitle = $(e.currentTarget).find('input[type=text]').val();
+                this.collection.add({title: newNameTitle},{validate:true});
+            }
+        });
+
         var nameCollection = new App.Collections.Name([
             {
                 title: 'Петр'
@@ -120,23 +154,9 @@
 
         var namesView = new App.Views.Names({collection: nameCollection});
 
-        $(document.body).append(namesView.render().el);
+        var addNameView = new App.Views.AddName({collection: nameCollection});
 
-        App.Views.AddName = Backbone.View.extend({
-            el: '#addName',
-            events: {
-                'submit' : 'submit'
-            },
-            initialize: function() {
-            },
-            submit: function(e) {
-                e.preventDefault();
-                var newNameTitle =  $(e.currentTarget).find('input[type=text]').val();
-                var newName = new App.Models.Name({ title: newNameTitle });
-                this.collection.add(newName);
-            }
-        });
-        var addNameView = new App.Views.AddName({ collection: nameCollection });
+        $('body').append(namesView.render().el);
 
     }());
 </script>
