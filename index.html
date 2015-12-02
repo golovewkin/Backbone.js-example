@@ -2,12 +2,10 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
-    </script>
-    <script src="underscore-min.js">
-    </script>
-    <script src="backbone-min.js">
-    </script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="underscore-min.js"></script>
+    <script src="backbone-min.js"></script>
 
     <script type="text/template" id="nameTemplate">
         <div class="names">
@@ -16,16 +14,24 @@
             <button class="delete">Delete</button>
         </div>
     </script>
+    <style>
+        .wrapper {
+            width: 400px;
+            margin: auto;
+        }
+    </style>
 
 </head>
 <body>
 
-<h1>Список Имен</h1>
+<div class="wrapper">
+    <h1>Список Имен</h1>
 
-<form action="" id="addName">
-    <input type="text" placeholder="Новое имя">
-    <input type="submit" value="Добавить Имя">
-</form>
+    <form action="" id="addName">
+        <input type="text" placeholder="Новое имя">
+        <input type="submit" value="Добавить Имя">
+    </form>
+</div>
 <script>
 
     (function () {
@@ -147,7 +153,7 @@
         var namesView = new App.Views.Names({collection: nameCollection});
         var addNameView = new App.Views.AddName({collection: nameCollection});
 
-        $('body').append(namesView.render().el);
+        $('.wrapper').append(namesView.render().el);
 
     }());
 </script>
