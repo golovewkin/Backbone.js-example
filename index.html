@@ -37,7 +37,6 @@
 
         //хэлпер шаблона
         window.template = function (id) {
-
             return _.template($('#' + id).html());
         };
 
@@ -47,30 +46,16 @@
             defaults: {
                 title: 'Иван Петров'
             },
-                //метод ошибки валидации
-            invalidAdding: function (model, error) {
-                alert(model.get("title") + " " + error);
-            },
             validate: function (attrs) {
-
                 if (!$.trim(attrs.title)) {
                     return 'Имя должно быть валидным!';
                 }
             }
-
         });
-
 
         //Список
         App.Collections.Name = Backbone.Collection.extend({
-
-            //привязка к событию
-            initialize: function () {
-
-                this.model.bind('invalid', this.model.invalidAdding, this.model); // как тут вызвать invalidAdding модели ?
-            },
             model: App.Models.Name
-
         });
 
         //Вид списка
@@ -90,14 +75,11 @@
                 return this;
             },
             addOne: function (name) {
-
                 // создавать новый дочерний вид
                 var nameView = new App.Views.Name({model: name});
-
                 // добавлять его в корневой элемент
                 this.$el.append(nameView.render().el);
             }
-
         });
 
         //Вид одного
@@ -109,6 +91,10 @@
 
                 this.model.on('change', this.render, this);
                 this.model.on('destroy', this.remove, this);
+                this.model.on('invalid', this.inv, this);
+            },
+            inv: function () {
+              console.log (1)
             },
             render: function () {
 
@@ -116,21 +102,18 @@
                 return this;
             },
             events: {
-
                 'click .edit': 'editName',
                 'click .delete': 'destroy'
             },
             editName: function () {
 
                 var newNameTitle = prompt('Как переименуем ?', this.model.get('title'));
-                this.model.set({title: newNameTitle}, {validate: true});
+                this.model.set({title: newNameTitle});
             },
             destroy: function () {
-
                 this.model.destroy();
             },
             remove: function () {
-
                 this.$el.remove();
             }
         });
@@ -147,24 +130,21 @@
 
                 e.preventDefault();
                 var newNameTitle = $(e.currentTarget).find('input[type=text]').val();
-                this.collection.add({title: newNameTitle},{validate:true});
+                var newModel = new App.Models.Name({title: newNameTitle});
+
+                if (!newModel.isValid()) {
+                    console.log ('error');
+                }else {
+                    this.collection.add(newModel);
+                }
             }
         });
 
         var nameCollection = new App.Collections.Name([
-            {
-                title: 'Петр'
-            },
-            {
-                title: 'Олег'
-            },
-            {
-                title: 'Анна'
-            }
+            {title: 'Петр'}, {title: 'Олег'}, {title: 'Анна'}
         ]);
 
         var namesView = new App.Views.Names({collection: nameCollection});
-
         var addNameView = new App.Views.AddName({collection: nameCollection});
 
         $('body').append(namesView.render().el);
