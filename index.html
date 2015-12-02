@@ -47,19 +47,30 @@
             defaults: {
                 title: 'Иван Петров'
             },
+                //метод ошибки валидации
+            invalidAdding: function (model, error) {
+                alert(model.get("title") + " " + error);
+            },
             validate: function (attrs) {
-                console.log(1)
-                if (!$.trim(attrs.title)) {
 
+                if (!$.trim(attrs.title)) {
                     return 'Имя должно быть валидным!';
                 }
             }
+
         });
+
 
         //Список
         App.Collections.Name = Backbone.Collection.extend({
 
+            //привязка к событию
+            initialize: function () {
+
+                this.model.bind('invalid', this.model.invalidAdding, this.model); // как тут вызвать invalidAdding модели ?
+            },
             model: App.Models.Name
+
         });
 
         //Вид списка
